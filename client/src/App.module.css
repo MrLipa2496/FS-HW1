@@ -1,0 +1,10 @@
+.messageItem {
+  padding: 10px;
+  margin: 10px;
+  box-shadow: 0 0 5px lightgrey;
+  border-radius: 5px;
+}
+
+.formContainer {
+  margin: 30px;
+}

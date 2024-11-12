@@ -1,0 +1,9 @@
+{
+  "development": {
+    "host": "localhost",
+    "port": 27017,
+    "dbName": "pe2024-1_chat_db_dev"
+  },
+  "test": {},
+  "production": {}
+}
