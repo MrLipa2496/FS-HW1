@@ -9,7 +9,7 @@ const {
   SOCKET_EVENTS: { NEW_MESSAGE, NEW_MESSAGE_SUCCESS, NEW_MESSAGE_ERROR },
 } = CONSTANTS;
 
-const socketClient = io('ws://localhost:5000');
+const socketClient = io('ws://localhost:5001');
 // socketClient.emit('connection', socketClient)
 
 export const createMessage = newMessage => {

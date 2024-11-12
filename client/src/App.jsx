@@ -1,16 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   getMessagesThunk,
   newMessagePending,
 } from './store/slices/messagesSlice';
-import styles from './App.module.css';
-import { connect } from 'react-redux';
 import { ws } from './api';
+import MessageForm from './components/forms/MessageForm';
+import MessageList from './components/MessageList';
 
 function App ({ messages, isFetching, error, limit, get, fetching }) {
-  const scrollTo = useRef(null);
-
   useEffect(() => {
     get(limit);
   }, [limit]);
@@ -21,39 +19,12 @@ function App ({ messages, isFetching, error, limit, get, fetching }) {
     fetching();
     formikBag.resetForm();
   };
-
-  useEffect(() => {
-    scrollTo?.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   return (
     <article
       style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}
     >
-      <section style={{ overflowY: 'auto' }}>
-        <ul>
-          {messages.map(m => (
-            <li key={m._id} className={styles.messageItem}>
-              <p>{m._id}</p>
-              <p>{m.body}</p>
-              <p>{m.createdAt}</p>
-            </li>
-          ))}
-        </ul>
-        <div ref={scrollTo} style={{ height: '20px' }}>
-          {error && <div style={{ color: 'red' }}>ERROR!!!</div>}
-          {isFetching && <div>Messages is loading. Please, wait...</div>}
-        </div>
-      </section>
-
-      <section className={styles.formContainer} style={{ marginTop: 'auto' }}>
-        <Formik initialValues={{ body: '' }} onSubmit={addMessage}>
-          <Form>
-            <Field name='body'></Field>
-            <button type='submit'>Send</button>
-          </Form>
-        </Formik>
-      </section>
+      <MessageList messages={messages} error={error} isFetching={isFetching} />
+      <MessageForm addMessage={addMessage} />
     </article>
   );
 }
