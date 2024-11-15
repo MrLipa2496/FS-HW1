@@ -17,22 +17,31 @@ module.exports.getMessages = async (req, res, next) => {
 
 module.exports.updateMessage = async (req, res, next) => {
   try {
-    const {
-      body,
-      params: { id },
-    } = req;
+    const { id } = req.params;
+    const { body } = req.body;
+
+    if (!body) {
+      return next(createHttpError(400, 'Body field is required'));
+    }
+
+    const existingMessage = await Message.findById(id);
+    if (!existingMessage) {
+      return next(createHttpError(404, 'Message Not Found in DB'));
+    }
 
     const updatedMessage = await Message.findByIdAndUpdate(
       id,
       { body },
       { new: true, runValidators: true }
     );
+
     if (!updatedMessage) {
-      return next(createHttpError(404, 'Message Not Found'));
+      return next(createHttpError(404, 'Message Not Found after Update'));
     }
 
     res.status(200).send({ data: updatedMessage });
   } catch (err) {
+    console.error('Error during update:', err);
     next(err);
   }
 };
@@ -40,7 +49,12 @@ module.exports.updateMessage = async (req, res, next) => {
 module.exports.deleteMessage = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await Message.findByIdAndDelete(id);
+
+    const deletedMessage = await Message.findByIdAndDelete(id);
+
+    if (!deletedMessage) {
+      return next(createHttpError(404, 'Message Not Found'));
+    }
 
     res.status(204).end();
   } catch (err) {

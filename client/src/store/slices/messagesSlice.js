@@ -15,6 +15,33 @@ export const getMessagesThunk = createAsyncThunk(
   }
 );
 
+export const updateMessageThunk = createAsyncThunk(
+  `${MESSAGES_SLICE_NAME}/update`,
+  async ({ id, body }, thunkAPI) => {
+    try {
+      const response = await http.updateMessage(id, body);
+      return response.data;
+    } catch (err) {
+      console.error('Error:', err.response?.data || err.message);
+      return thunkAPI.rejectWithValue({
+        message: err.response?.data || err.message,
+      });
+    }
+  }
+);
+
+export const deleteMessageThunk = createAsyncThunk(
+  `${MESSAGES_SLICE_NAME}/delete`,
+  async (id, thunkAPI) => {
+    try {
+      await http.deleteMessage(id);
+      return id;
+    } catch (err) {
+      return thunkAPI.rejectWithValue({ message: err.message });
+    }
+  }
+);
+
 const initialState = {
   messages: [],
   isFetching: false,
@@ -36,9 +63,26 @@ const messagesSlice = createSlice({
         state.messages.splice(0, 1);
       }
       state.messages.push(payload);
-      // state.error = null;
     },
     newMessageError (state, { payload }) {
+      state.isFetching = false;
+      state.error = payload;
+    },
+    updateMessageSuccess (state, { payload }) {
+      const index = state.messages.findIndex(msg => msg._id === payload.id);
+      if (index !== -1) {
+        state.messages[index] = payload;
+      }
+    },
+    updateMessageError (state, { payload }) {
+      state.isFetching = false;
+      state.error = payload;
+    },
+    deleteMessageSuccess (state, { payload }) {
+      state.isFetching = false;
+      state.messages = state.messages.filter(msg => msg._id !== payload.id); // видаляє повідомлення з масиву
+    },
+    deleteMessageError (state, { payload }) {
       state.isFetching = false;
       state.error = payload;
     },
@@ -58,11 +102,55 @@ const messagesSlice = createSlice({
       state.isFetching = false;
       state.error = payload;
     });
+
+    // DELETE
+    builder.addCase(deleteMessageThunk.pending, state => {
+      state.isFetching = true;
+      state.error = null;
+    });
+    builder.addCase(deleteMessageThunk.fulfilled, (state, { payload }) => {
+      state.isFetching = false;
+      state.messages = state.messages.filter(
+        message => message._id !== payload
+      );
+    });
+    builder.addCase(deleteMessageThunk.rejected, (state, { payload }) => {
+      state.isFetching = false;
+      state.error = payload;
+    });
+
+    // UPDATE
+    builder.addCase(updateMessageThunk.pending, state => {
+      state.isFetching = true;
+      state.error = null;
+    });
+
+    builder.addCase(updateMessageThunk.fulfilled, (state, { payload }) => {
+      state.isFetching = false;
+      if (payload && payload._id) {
+        const index = state.messages.findIndex(msg => msg._id === payload._id);
+        if (index !== -1) {
+          state.messages[index] = payload;
+        }
+      } else {
+        console.error('Помилка: payload не містить _id');
+      }
+    });
+
+    builder.addCase(updateMessageThunk.rejected, (state, { payload }) => {
+      state.isFetching = false;
+      state.error = payload;
+    });
   },
 });
 
 const { reducer, actions } = messagesSlice;
-export const { newMessagePending, newMessageSuccess, newMessageError } =
-  actions;
+export const {
+  newMessagePending,
+  newMessageSuccess,
+  newMessageError,
+  deleteMessageSuccess,
+  updateMessageSuccess,
+} = actions;
 
 export default reducer;

@@ -1,1 +1,9 @@
 GET http://127.0.0.1:5000/api/messages HTTP/1.1
+
+###
+PATCH http://localhost:5001/api/messages/67277884bfc5cd8f15809404
+Content-Type: application/json
+
+{
+  "body": "Updated message content2"
+}
