@@ -1,6 +1,113 @@
+.messageListContainer {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.messageList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .messageItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #ddd;
   padding: 10px;
-  margin: 10px;
-  box-shadow: 0 0 5px lightgrey;
+  gap: 10px;
+}
+
+.messageContent {
+  flex: 1;
+}
+
+.messageId,
+.messageDate {
+  font-size: 12px;
+  color: #666;
+}
+
+.messageBody {
+  font-size: 16px;
+  color: #333;
+  margin: 5px 0;
+}
+
+.inputField {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
+}
+
+.saveButton,
+.cancelButton,
+.editButton,
+.deleteButton {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 80px; /* Фіксована ширина кнопок для вирівнювання */
+}
+
+.saveButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #45a049;
+}
+
+.cancelButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #e53935;
+}
+
+.editButton {
+  background-color: #2196f3;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #1976d2;
+}
+
+.deleteButton {
+  background-color: #ff5722;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #e64a19;
+}
+
+.scrollToBottom {
+  text-align: center;
+  padding: 10px;
+}
+
+.errorMessage {
+  color: red;
+  font-weight: bold;
+}
+
+.loadingMessage {
+  color: #333;
+  font-style: italic;
 }

@@ -10,7 +10,6 @@ function MessageList ({ messages, isFetching, error }) {
   const dispatch = useDispatch();
   const scrollTo = useRef(null);
 
-  // Локальний стан для режиму редагування
   const [editMode, setEditMode] = useState({});
   const [editableMessages, setEditableMessages] = useState({});
 
@@ -18,7 +17,6 @@ function MessageList ({ messages, isFetching, error }) {
     scrollTo?.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Ввімкнути режим редагування
   const handleEdit = id => {
     setEditMode(prevState => ({ ...prevState, [id]: true }));
     setEditableMessages(prevState => ({
@@ -27,7 +25,6 @@ function MessageList ({ messages, isFetching, error }) {
     }));
   };
 
-  // Зберегти зміни
   const handleSave = id => {
     const newBody = editableMessages[id];
     if (!newBody || newBody.trim() === '') {
@@ -38,17 +35,14 @@ function MessageList ({ messages, isFetching, error }) {
     setEditMode(prevState => ({ ...prevState, [id]: false }));
   };
 
-  // Скасувати редагування
   const handleCancel = id => {
     setEditMode(prevState => ({ ...prevState, [id]: false }));
   };
 
-  // Видалити повідомлення
   const handleDelete = id => {
     dispatch(deleteMessageThunk(id));
   };
 
-  // Оновити текст у стані
   const handleInputChange = (id, value) => {
     setEditableMessages(prevState => ({
       ...prevState,
@@ -57,42 +51,73 @@ function MessageList ({ messages, isFetching, error }) {
   };
 
   return (
-    <section style={{ overflowY: 'auto' }}>
-      <ul>
+    <section className={styles.messageListContainer}>
+      <ul className={styles.messageList}>
         {messages.map(m => (
           <li key={m._id} className={styles.messageItem}>
-            <p>ID: {m._id}</p>
-            <p>Дата створення: {m.createdAt}</p>
-
-            {editMode[m._id] ? (
-              // Режим редагування
-              <>
+            <div className={styles.messageContent}>
+              <p className={styles.messageId}>ID: {m._id}</p>
+              <p className={styles.messageDate}>
+                Дата створення: {m.createdAt}
+              </p>
+              {editMode[m._id] ? (
                 <input
                   type='text'
+                  className={styles.inputField}
                   value={editableMessages[m._id] || ''}
                   onChange={e => handleInputChange(m._id, e.target.value)}
                 />
-                <button onClick={() => handleSave(m._id)}>Save</button>
-                <button onClick={() => handleCancel(m._id)}>Cancel</button>
-              </>
-            ) : (
-              // Звичайний режим
-              <>
-                <p>{m.body}</p>
-                <button onClick={() => handleEdit(m._id)}>Edit</button>
-                <button onClick={() => handleDelete(m._id)}>Delete</button>
-              </>
-            )}
+              ) : (
+                <p className={styles.messageBody}>{m.body}</p>
+              )}
+            </div>
+            <div className={styles.buttonContainer}>
+              {editMode[m._id] ? (
+                <>
+                  <button
+                    className={styles.saveButton}
+                    onClick={() => handleSave(m._id)}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className={styles.cancelButton}
+                    onClick={() => handleCancel(m._id)}
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className={styles.editButton}
+                    onClick={() => handleEdit(m._id)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => handleDelete(m._id)}
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
           </li>
         ))}
       </ul>
-      <div ref={scrollTo} style={{ height: '20px' }}>
+      <div ref={scrollTo} className={styles.scrollToBottom}>
         {error && (
-          <div style={{ color: 'red' }}>
+          <div className={styles.errorMessage}>
             ERROR!!! {error.message || 'Unknown error'}
           </div>
         )}
-        {isFetching && <div>Messages are loading. Please, wait...</div>}
+        {isFetching && (
+          <div className={styles.loadingMessage}>
+            Messages are loading. Please, wait...
+          </div>
+        )}
       </div>
     </section>
   );
